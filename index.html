@@ -1374,7 +1374,8 @@
                             <h3>🎓 Professor's Intuition: What Does "NP" Actually Mean?</h3>
                             <p>Students often confuse "NP" with "impossible" or "very slow." It doesn't mean either!
                                 <strong>NP</strong> stands for <em>Non-deterministic Polynomial time</em> — but a much
-                                friendlier way to think about it is this:</p>
+                                friendlier way to think about it is this:
+                            </p>
                             <p><strong>A problem is in NP if, whenever the answer is "YES", someone can hand you a short
                                     proof of that fact, and you can verify that proof quickly (in polynomial
                                     time).</strong></p>
@@ -1456,7 +1457,8 @@
                                 by Cook (1971) and catalogued by Garey &amp; Johnson (1979). We exploit this proven
                                 hardness by constructing a polynomial-time reduction <em>from</em> Vertex Cover
                                 <em>to</em> Set Cover. If a polynomial-time algorithm for Set Cover existed, it could
-                                solve Vertex Cover in polynomial time — contradicting its NP-Hardness.</p>
+                                solve Vertex Cover in polynomial time — contradicting its NP-Hardness.
+                            </p>
                             <p style="margin-top:8px;">To prove Set Cover is NP-Hard, we can't start from scratch — that
                                 would be circular. Instead, we borrow from a problem that <em>already</em> has a proven
                                 NP-Hard reputation: <strong>Vertex Cover</strong>. The strategy is elegant: <em>"If I
@@ -1628,7 +1630,8 @@
                                     <span class="math-tooltip"
                                         title="⋃ — the union of all sets indexed by vertices in V'">⋃<sub>v∈V'</sub></span>
                                     S<sub>v</sub> = E = U. So C' = {S<sub>v</sub> : v ∈ V'} is a set cover of size ≤ k.
-                                    ✓</p>
+                                    ✓
+                                </p>
                                 <div
                                     style="background: rgba(16,185,129,0.1); border-radius: 4px; padding: 8px 10px; font-size: 0.85em; color: #a7f3d0;">
                                     <strong>Translation:</strong> Each guard at vertex v watches some hallways. Those
@@ -1676,7 +1679,8 @@
                                 Cover instance into a Set Cover instance took exponential time, we would have proven
                                 nothing — we might as well have just solved the original problem directly! The rule is:
                                 <strong>the transformation must run in polynomial time</strong>, or the hardness
-                                argument collapses.</p>
+                                argument collapses.
+                            </p>
                             <p>Fortunately, our recipe is simple: loop through vertices, loop through edges. That's it.
                                 Let's count the work carefully to prove it.</p>
                         </div>
@@ -3267,8 +3271,17 @@
                     this.ui.setPlaybackState(false);
                     this.ui.setStatus('Computing...');
 
-                    const btn = document.getElementById(type === 'bf' ? 'btn-build-bf' : 'btn-build-greedy');
+                    const btnId = type === 'bf' ? 'btn-build-bf' : 'btn-build-greedy';
+                    const btn = document.getElementById(btnId);
                     const origHtml = btn ? btn.innerHTML : '';
+
+                    const restoreButton = () => {
+                        if (btn) {
+                            btn.innerHTML = origHtml;
+                            btn.disabled = false;
+                        }
+                    };
+
                     if (btn) {
                         btn.innerHTML = `<span class="btn-spinner"></span> Computing...`;
                         btn.disabled = true;
@@ -3278,85 +3291,90 @@
                     if (type === 'bf' && this.currentSets.length > 15) {
                         this.ui.updateStepExplanation('Brute-force aborted: m > 15. The instance is intractable (O(2^m) operations). Use Greedy instead.');
                         this.ui.setStatus('Error');
+                        restoreButton();
                         return;
                     }
 
                     setTimeout(() => {
-                        let result = null;
-                        if (type === 'bf') {
-                            this.ui.setPseudocode(this.bfPseudocode);
-                            result = this.engine.bruteForce(this.currentUniverse, this.currentSets, this.currentK);
-                            if (result && result.selected) {
-                                this.optimalSize = result.selected.length;
-                            }
-                            this.currentRatio = null;
-                            this.hasRunBF = true;
-                            this.updateBeginnerModeUI();
-                            const bc = document.getElementById('bruteforce-concept');
-                            if (bc) bc.setAttribute('open', '');
-                        } else if (type === 'greedy') {
-                            this.ui.setPseudocode(this.greedyPseudocode);
-                            const greedyMode = document.getElementById('greedy-mode-select') ? document.getElementById('greedy-mode-select').value : 'optimization';
-                            result = this.engine.greedy(this.currentUniverse, this.currentSets, this.currentK, greedyMode);
+                        try {
+                            let result = null;
+                            if (type === 'bf') {
+                                this.ui.setPseudocode(this.bfPseudocode);
+                                result = this.engine.bruteForce(this.currentUniverse, this.currentSets, this.currentK);
+                                if (result && result.selected) {
+                                    this.optimalSize = result.selected.length;
+                                }
+                                this.currentRatio = null;
+                                this.hasRunBF = true;
+                                this.updateBeginnerModeUI();
+                                const bc = document.getElementById('bruteforce-concept');
+                                if (bc) bc.setAttribute('open', '');
+                            } else if (type === 'greedy') {
+                                this.ui.setPseudocode(this.greedyPseudocode);
+                                const greedyMode = document.getElementById('greedy-mode-select') ? document.getElementById('greedy-mode-select').value : 'optimization';
+                                result = this.engine.greedy(this.currentUniverse, this.currentSets, this.currentK, greedyMode);
 
-                            this.hasRunGreedy = true;
-                            this.updateBeginnerModeUI();
-                            const gc = document.getElementById('greedy-concept');
-                            if (gc) gc.setAttribute('open', '');
+                                this.hasRunGreedy = true;
+                                this.updateBeginnerModeUI();
+                                const gc = document.getElementById('greedy-concept');
+                                if (gc) gc.setAttribute('open', '');
 
-                            if (result && result.selected) {
-                                if (this.optimalSize) {
-                                    this.currentRatio = result.selected.length / this.optimalSize;
-                                } else {
-                                    this.currentRatio = null; // Fixed
+                                if (result && result.selected) {
+                                    if (this.optimalSize) {
+                                        this.currentRatio = result.selected.length / this.optimalSize;
+                                    } else {
+                                        this.currentRatio = null;
+                                    }
                                 }
                             }
-                        }
 
-                        // Allow unsolvable results (result.selected === null) to still play back steps
-                        if (!result || !result.steps || result.steps.length === 0) {
-                            this.ui.setStatus('Complete');
-                            this.ui.updateStepExplanation('No valid cover found within bounds.');
-                            return;
-                        }
-
-                        this.queue.steps = result.steps;
-                        this.queue.reset();
-                        this.ui.setStatus('Steps Built — Press Play to Begin');
-                        this.ui.updateStepExplanation(`Computed ${result.steps.length} steps. Press Play to begin.`);
-
-
-
-
-                        const bfResult = type === 'bf' ? result : null;
-                        const greedyResult = type === 'greedy' ? result : null;
-
-                        this.executionHistory.push({
-                            timestamp: Date.now(),
-                            m: this.currentSets.length,
-                            n: this.currentUniverse.length,
-                            k: this.currentK,
-                            bfOps: bfResult?.ops ?? null,
-                            greedyOps: greedyResult?.ops ?? null,
-                            bfSize: bfResult?.selected?.length ?? null,
-                            greedySize: greedyResult?.selected?.length ?? null,
-                            ratio: this.currentRatio,
-                            presetName: this.currentPresetName || 'custom'
-                        });
-
-                        // Show/hide charging proof button
-                        const chargingBtn = document.getElementById('btn-show-charging');
-                        const chargingTotal = document.getElementById('charging-total');
-                        if (chargingBtn) {
-                            if (type === 'greedy') {
-                                chargingBtn.style.display = 'inline-block';
-                            } else {
-                                chargingBtn.style.display = 'none';
-                                chargingBtn.textContent = 'Show Charging Proof';
-                                if (chargingTotal) chargingTotal.style.display = 'none';
+                            if (!result || !result.steps || result.steps.length === 0) {
+                                this.ui.setStatus('Complete');
+                                this.ui.updateStepExplanation('No valid cover found within bounds.');
+                                return;
                             }
-                        }
 
+                            this.queue.steps = result.steps;
+                            this.queue.reset();
+                            this.ui.setStatus('Steps Built — Press Play to Begin');
+                            this.ui.updateStepExplanation(`Computed ${result.steps.length} steps. Press Play to begin.`);
+
+                            // Log to history
+                            const bfResult = type === 'bf' ? result : null;
+                            const greedyResult = type === 'greedy' ? result : null;
+
+                            this.executionHistory.push({
+                                timestamp: Date.now(),
+                                m: this.currentSets.length,
+                                n: this.currentUniverse.length,
+                                k: this.currentK,
+                                bfOps: bfResult?.ops ?? null,
+                                greedyOps: greedyResult?.ops ?? null,
+                                bfSize: bfResult?.selected?.length ?? null,
+                                greedySize: greedyResult?.selected?.length ?? null,
+                                ratio: this.currentRatio,
+                                presetName: this.currentPresetName || 'custom'
+                            });
+
+                            // Show/hide charging proof button
+                            const chargingBtn = document.getElementById('btn-show-charging');
+                            const chargingTotal = document.getElementById('charging-total');
+                            if (chargingBtn) {
+                                if (type === 'greedy') {
+                                    chargingBtn.style.display = 'inline-block';
+                                } else {
+                                    chargingBtn.style.display = 'none';
+                                    chargingBtn.textContent = 'Show Charging Proof';
+                                    if (chargingTotal) chargingTotal.style.display = 'none';
+                                }
+                            }
+                        } catch (e) {
+                            console.error('[App.buildAlgorithm]', e);
+                            this.ui.setStatus('Error');
+                            this.ui.updateStepExplanation('An unexpected calculation error occurred.');
+                        } finally {
+                            restoreButton();
+                        }
                     }, 50);
                 }
 
