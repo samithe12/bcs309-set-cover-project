@@ -1650,8 +1650,11 @@
                                 <p style="margin-bottom: 8px; font-size: 0.93em;">Let C' be a set cover of size ≤ k. For
                                     each S<sub>v</sub> <span class="math-tooltip"
                                         title="∈ — set S_v is a member of the chosen collection C'">∈</span> C', include
-                                    Thus every edge has at least one endpoint in V', making V' a vertex cover of size ≤
-                                    k. ✓</p>
+                                    v in V'. Since each S<sub>v</sub> ∈ C' maps to exactly one vertex v,
+                                    |V'| = |C'| ≤ k (the budget is preserved by the one-to-one correspondence).
+                                    For any edge e = (u, w) ∈ E, since e ∈ U, there must exist some
+                                    S<sub>v</sub> ∈ C' with e ∈ S<sub>v</sub>. By construction, v is an endpoint of e.
+                                    Thus every edge has at least one endpoint in V', making V' a vertex cover. ✓</p>
                                 <div
                                     style="background: rgba(59,130,246,0.1); border-radius: 4px; padding: 8px 10px; font-size: 0.85em; color: #bfdbfe;">
                                     <strong>Translation:</strong> Every fire station came from some vertex. Because the
